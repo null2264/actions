@@ -52,7 +52,7 @@ runs:
         validate-wrappers: true
         gradle-home-cache-includes: ${{ inputs.gradle-home-cache-includes }}
         gradle-home-cache-excludes: ${{ inputs.gradle-home-cache-excludes }}
-        cache-read-only: ${{ input.gradle-cache-if }}
+        cache-read-only: ${{ inputs.gradle-cache-if }}
 
     - name: Making sure Gradle Wrapper is executable
       working-directory: ${{ inputs.working-directory }}
