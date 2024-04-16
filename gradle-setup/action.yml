@@ -19,25 +19,27 @@ runs:
   steps:
     - name: Setup JDK ${{ inputs.java }} (Custom Distro)
       uses: actions/setup-java@v3
-      if: ${{ inputs.distro != "github" }}
+      if: ${{ inputs.distro != 'github' }}
       with:
         distribution: ${{ inputs.distro }}
         java-version: ${{ inputs.java }}
 
     - name: Setup JDK ${{ inputs.java }} (GitHub)
       # https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
-      if: ${{ inputs.distro == "github" }}
+      if: ${{ inputs.distro == 'github' }}
+      shell: bash
       run: |
         echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"
 
     - name: Validate Gradle Wrapper
-      if: ${{ inputs.working-directory == "." }}
+      if: ${{ inputs.working-directory == '.' }}
       uses: gradle/actions/wrapper-validation@v3
 
     - name: Setup Gradle
-      if: ${{ inputs.working-directory == "." }}
+      if: ${{ inputs.working-directory == '.' }}
       uses: gradle/actions/setup-gradle@v3
 
     - name: Making sure Gradle Wrapper is executable
       working-directory: ${{ inputs.working-directory }}
+      shell: bash
       run: chmod +x ./gradlew
