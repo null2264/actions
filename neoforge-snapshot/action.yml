@@ -31,6 +31,7 @@ runs:
       with:
         java: ${{ inputs.java-version }}
         distro: ${{ inputs.java-distro }}
+        gradle-user-home: "~/Kits/.gradle"
         working-directory: "Kits"
 
     - name: Making sure Gradle Wrapper is executable

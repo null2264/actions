@@ -13,6 +13,10 @@ inputs:
     description: 'Set working directory to use (default: .)'
     default: '.'
     required: false
+  gradle-user-home:
+    description: 'Path to Gradle User Home (default: ~/.gradle)'
+    default: '~/.gradle'
+    required: false
   gradle-home-cache-includes:
     description: 'List of folder/file that should be cached'
     default: |
@@ -44,6 +48,11 @@ runs:
       shell: bash
       run: |
         echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"
+
+    - name: Set GRADLE_USER_HOME
+      shell: bash
+      run: |
+        echo "GRADLE_USER_HOME=${{ inputs.gradle-user-home }}" >> "$GITHUB_ENV"
 
     - name: Setup Gradle
       if: ${{ inputs.working-directory == '.' }}
