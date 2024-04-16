@@ -42,8 +42,8 @@ runs:
     - name: Gradle Cache (Kits)
       uses: actions/cache@v4
       with:
-        path: ${{ github.action_path }}/Kits/.gradle/caches
-        key: ${{ runner.os }}-gKits-${{ hashFiles('${{ github.action_path }}/Kits/**/*.gradle*', '${{ github.action_path }}/Kits/gradle.properties') }}
+        path: ./Kits/.gradle/caches
+        key: ${{ runner.os }}-gKits-${{ hashFiles('./Kits/**/*.gradle*', './Kits/gradle.properties') }}
         restore-keys: |
           ${{ runner.os }}-gKits-
 
