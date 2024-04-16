@@ -13,6 +13,19 @@ inputs:
     description: 'Set working directory to use (default: .)'
     default: '.'
     required: false
+  gradle-home-cache-includes:
+    description: 'List of folder/file that should be cached'
+    default: |
+      caches
+      notifications
+    required: false
+  gradle-home-cache-excludes:
+    description: 'List of folder/file that should NOT be cached'
+    default: ''
+    required: false
+  gradle-cache-if:
+    description: 'Whether or not gradle should be cached'
+    default: ${{ github.event.repository != null && github.ref_name != github.event.repository.default_branch }}
 
 runs:
   using: composite
@@ -31,13 +44,14 @@ runs:
       run: |
         echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"
 
-    - name: Validate Gradle Wrapper
-      if: ${{ inputs.working-directory == '.' }}
-      uses: gradle/actions/wrapper-validation@v3
-
     - name: Setup Gradle
       if: ${{ inputs.working-directory == '.' }}
       uses: gradle/actions/setup-gradle@v3
+      with:
+        validate-wrappers: true
+        gradle-home-cache-includes: ${{ inputs.gradle-home-cache-includes }}
+        gradle-home-cache-excludes: ${{ inputs.gradle-home-cache-excludes }}
+        cache-read-only: ${{ input.gradle-cache-if }}
 
     - name: Making sure Gradle Wrapper is executable
       working-directory: ${{ inputs.working-directory }}
