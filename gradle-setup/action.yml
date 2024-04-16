@@ -9,6 +9,10 @@ inputs:
     description: Which JDK distribution to use (default: github)
     default: github
     required: false
+  working-directory:
+    description: Set working directory to use (default: .)
+    default: "."
+    required: false
 
 runs:
   using: composite
@@ -27,10 +31,12 @@ runs:
         echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"
 
     - name: Validate Gradle Wrapper
+      if: ${{ inputs.working-directory == "." }}
       uses: gradle/actions/wrapper-validation@v3
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
 
     - name: Making sure Gradle Wrapper is executable
+      working-directory: ${{ inputs.working-directory }}
       run: chmod +x ./gradlew

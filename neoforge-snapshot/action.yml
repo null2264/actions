@@ -1,0 +1,45 @@
+name: Compile NeoForge Kits for Snapshot
+description: Compile and Publish (Locally) NeoForge Kits for MC Snapshots
+inputs:
+  mc-version:
+    description: The snapshot version to compile
+    default: ''
+    required: false
+  java-version:
+    description: The JDK version to use (default 17)
+    default: 17
+    required: false
+  java-distro:
+    description: Which JDK distribution to use (default: github)
+    default: github
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Clone NeoForge Kits
+      run: |
+        cd ~
+        git clone -q -b port/${{ inputs.mc-version }} --depth 1 https://github.com/neoforged/NeoForge Kits
+
+    - uses: null2264/actions/gradle-setup@master
+      if: ${{ inputs.mc-version != '' }}
+      with:
+        java: ${{ inputs.java-version }}
+        distro: ${{ inputs.java-distro }}
+        working-directory: "~/Kits"
+
+    - name: Gradle Cache (Kits)
+      uses: actions/cache@v4
+      with:
+        path: ~/Kits/.gradle/caches
+        key: ${{ runner.os }}-gKits-${{ hashFiles('Kits/**/*.gradle*', 'Kits/gradle.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gKits-
+
+    - name: Compile and Publish
+      working-directory: "~/Kits"
+      run: |
+        echo "org.gradle.daemon=false" >> gradle.properties
+        ./gradlew neoforge:setup
+        ./gradlew neoforge:publishToMavenLocal
