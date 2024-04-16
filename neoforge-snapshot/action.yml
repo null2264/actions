@@ -17,6 +17,10 @@ inputs:
     description: 'Skip gradle setup, set to "true"'
     default: 'false'
     required: false
+  gradle-no-cache-if:
+    description: 'Whether or not gradle should be cached'
+    default: ${{ github.event.repository != null && github.ref_name != github.event.repository.default_branch }}
+    required: false
 
 runs:
   using: composite
@@ -33,6 +37,7 @@ runs:
         distro: ${{ inputs.java-distro }}
         gradle-user-home: "~/Kits/.gradle"
         working-directory: "Kits"
+        gradle-no-cache-if: ${{ inputs.gradle-no-cache-if }}
 
     - name: Making sure Gradle Wrapper is executable
       if: ${{ inputs.mc-version != '' && inputs.skip-gradle-setup == 'true' }}
