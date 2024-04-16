@@ -47,7 +47,7 @@ runs:
 
     - name: Set GRADLE_USER_HOME
       shell: bash
-      if: ${{ inputs.working-directory }}
+      if: ${{ inputs.working-directory != '.' }}
       run: |
         echo "GRADLE_USER_HOME=${{ inputs.working-directory }}/.gradle" >> "$GITHUB_ENV"
 
