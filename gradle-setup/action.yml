@@ -1,0 +1,36 @@
+name: Gradle Setup
+description: Set up the basics to run gradle
+inputs:
+  java:
+    description: The JDK version to use (default: 17)
+    default: 17
+    required: false
+  distro:
+    description: Which JDK distribution to use (default: github)
+    default: github
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Setup JDK ${{ inputs.java }} (Custom Distro)
+      uses: actions/setup-java@v3
+      if: ${{ inputs.distro != "github" }}
+      with:
+        distribution: ${{ inputs.distro }}
+        java-version: ${{ inputs.java }}
+
+    - name: Setup JDK ${{ inputs.java }} (GitHub)
+      # https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
+      if: ${{ inputs.distro == "github" }}
+      run: |
+        echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"
+
+    - name: Validate Gradle Wrapper
+      uses: gradle/actions/wrapper-validation@v3
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Making sure Gradle Wrapper is executable
+      run: chmod +x ./gradlew
