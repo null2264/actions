@@ -13,24 +13,20 @@ inputs:
     description: 'Set working directory to use (default: .)'
     default: '.'
     required: false
-  skip-java-setup:
-    description: "To skip java setup set to 'true'"
-    default: 'false'
-    required: false
 
 runs:
   using: composite
   steps:
     - name: Setup JDK ${{ inputs.java }} (Custom Distro)
       uses: actions/setup-java@v3
-      if: ${{ inputs.distro != 'github' && inputs.skip-java-setup != 'true' }}
+      if: ${{ inputs.distro != 'github' }}
       with:
         distribution: ${{ inputs.distro }}
         java-version: ${{ inputs.java }}
 
     - name: Setup JDK ${{ inputs.java }} (GitHub)
       # https://github.com/actions/runner-images/blob/07d23cf/images/ubuntu/Ubuntu2204-Readme.md#java
-      if: ${{ inputs.distro == 'github' && inputs.skip-java-setup != 'true' }}
+      if: ${{ inputs.distro == 'github' }}
       shell: bash
       run: |
         echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"

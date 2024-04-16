@@ -28,7 +28,6 @@ runs:
         java: ${{ inputs.java-version }}
         distro: ${{ inputs.java-distro }}
         working-directory: "Kits"
-        skip-java-setup: true
 
     - name: Gradle Cache (Kits)
       uses: actions/cache@v4
