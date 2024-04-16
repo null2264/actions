@@ -2,16 +2,16 @@ name: Compile NeoForge Kits for Snapshot
 description: Compile and Publish (Locally) NeoForge Kits for MC Snapshots
 inputs:
   mc-version:
-    description: The snapshot version to compile
-    default: ''
+    description: "The snapshot version to compile"
+    default: ""
     required: false
   java-version:
-    description: The JDK version to use (default 17)
-    default: 17
+    description: "The JDK version to use (default: 17)"
+    default: "17"
     required: false
   java-distro:
-    description: Which JDK distribution to use (default: github)
-    default: github
+    description: "Which JDK distribution to use (default: github)"
+    default: "github"
     required: false
 
 runs:

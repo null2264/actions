@@ -2,15 +2,15 @@ name: Gradle Setup
 description: Set up the basics to run gradle
 inputs:
   java:
-    description: The JDK version to use (default: 17)
-    default: 17
+    description: "The JDK version to use (default: 17)"
+    default: "17"
     required: false
   distro:
-    description: Which JDK distribution to use (default: github)
-    default: github
+    description: "Which JDK distribution to use (default: github)"
+    default: "github"
     required: false
   working-directory:
-    description: Set working directory to use (default: .)
+    description: "Set working directory to use (default: .)"
     default: "."
     required: false
 
