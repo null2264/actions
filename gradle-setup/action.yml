@@ -13,10 +13,6 @@ inputs:
     description: 'Set working directory to use (default: .)'
     default: '.'
     required: false
-  gradle-user-home:
-    description: 'Path to Gradle User Home (default: ~/.gradle)'
-    default: '~/.gradle'
-    required: false
   gradle-home-cache-includes:
     description: 'List of folder/file that should be cached'
     default: |
@@ -51,19 +47,14 @@ runs:
 
     - name: Set GRADLE_USER_HOME
       shell: bash
+      if: ${{ inputs.working-directory }}
       run: |
-        echo "GRADLE_USER_HOME=${{ inputs.gradle-user-home }}" >> "$GITHUB_ENV"
+        echo "GRADLE_USER_HOME=${{ inputs.working-directory }}/.gradle" >> "$GITHUB_ENV"
 
     - name: Setup Gradle
-      if: ${{ inputs.working-directory == '.' }}
       uses: gradle/actions/setup-gradle@v3
       with:
         validate-wrappers: true
         gradle-home-cache-includes: ${{ inputs.gradle-home-cache-includes }}
         gradle-home-cache-excludes: ${{ inputs.gradle-home-cache-excludes }}
         cache-read-only: ${{ inputs.gradle-no-cache-if }}
-
-    - name: Making sure Gradle Wrapper is executable
-      working-directory: ${{ inputs.working-directory }}
-      shell: bash
-      run: chmod +x ./gradlew
