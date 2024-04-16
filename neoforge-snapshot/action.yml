@@ -30,7 +30,7 @@ runs:
       run: |
         git clone -q -b port/${{ inputs.mc-version }} --depth 1 https://github.com/neoforged/NeoForge Kits
 
-    - uses: null2264/actions/gradle-setup@master
+    - uses: null2264/actions/gradle-setup@5a590fd36298349625a8573d08adde14b06c86e8
       if: ${{ inputs.mc-version != '' && inputs.skip-gradle-setup != 'true' }}
       with:
         java: ${{ inputs.java-version }}
