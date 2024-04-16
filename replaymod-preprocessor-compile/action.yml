@@ -1,0 +1,27 @@
+name: Compile MC Mod with Preprocessor
+description: Compile MC Mod that using ReplayMod's Preprocessor
+inputs:
+  versions:
+    description: 'List of versions that needed to be compiled, separated by space'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Gradle for ReplayMod's Preprocessor
+      shell: bash
+      run: |
+        echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
+        echo "org.gradle.jvmargs=-Xmx6G" >> gradle.properties
+        echo "org.gradle.cache.cleanup=false" >> gradle.properties
+        echo "org.gradle.daemon=false" >> gradle.properties
+
+    - name: Build with Gradle
+      shell: bash
+      run: |
+        MOD_VERSIONS=(${{ inputs.versions }})
+
+        for i in "${MOD_VERSIONS[@]}"; do
+                echo "Compiling ${i}"
+                ./gradlew :${i}:build --stacktrace
+        done
