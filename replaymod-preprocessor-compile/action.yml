@@ -4,6 +4,10 @@ inputs:
   versions:
     description: 'List of versions that needed to be compiled, separated by space'
     required: true
+  daemon:
+    description: 'Whether to enable gradle daemon or not, ("y" to enable, "n" to disable)'
+    default: 'y'
+    required: false
 
 runs:
   using: composite
@@ -14,7 +18,11 @@ runs:
         echo "org.gradle.java.installations.fromEnv=JAVA_HOME,JAVA_HOME_8_X64,JAVA_HOME_17_X64,JAVA_HOME_21_X64" >> gradle.properties
         echo "org.gradle.jvmargs=-Xmx6G" >> gradle.properties
         echo "org.gradle.cache.cleanup=false" >> gradle.properties
-        echo "org.gradle.daemon=false" >> gradle.properties
+
+    - name: Disable Gradle Daemon
+      run: |
+        daemon=${{ inputs.daemon == 'y' && 'true' || 'false' }}
+        echo "org.gradle.daemon=$daemon" >> gradle.properties
 
     - name: Build with Gradle
       shell: bash
