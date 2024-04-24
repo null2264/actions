@@ -20,6 +20,7 @@ runs:
         echo "org.gradle.cache.cleanup=false" >> gradle.properties
 
     - name: Disable Gradle Daemon
+      shell: bash
       run: |
         daemon=${{ inputs.daemon == 'y' && 'true' || 'false' }}
         echo "org.gradle.daemon=$daemon" >> gradle.properties
