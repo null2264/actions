@@ -1,0 +1,79 @@
+name: Sign Android APK
+description: Sign Android APK
+inputs:
+  releaseDir:
+    description: 'The directory where the apks is located'
+    required: true
+  signingKeyBase64:
+    description: 'Signing key in base64'
+    required: true
+  keyAlias:
+    description: 'Key alias'
+    required: true
+  keyStorePassword:
+    description: 'Keystore password'
+    required: true
+  keyPassword:
+    description: 'Key password'
+    required: true
+  buildToolsVersion:
+    description: 'The version Android SDK build tools'
+    default: '29.0.3'
+    required: false
+  summarise:
+    description: 'Summarise the result on GitHub Summary, leave empty to disable'
+    default: ''
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Build with Gradle
+      shell: bash
+      run: |
+        BUILD_TOOLS=${ANDROID_SDK_ROOT}'/build-tools/${{ inputs.buildToolsVersion }}'
+        APK_DIR='${{ inputs.releaseDir }}'
+
+        echo "${{ inputs.signingKeyBase64 }}" | base64 -d > /tmp/signingkey.jks
+
+        APKS=($(ls -1 $APK_DIR/app-standard-*.apk))
+
+        SIGNED=""
+
+        [ '${{ inputs.summarise }}' = '' ] || {
+          echo "<table>" >> $GITHUB_STEP_SUMMARY;
+          echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+          echo "<th>Source File</th><th>Signed File</th>" >> $GITHUB_STEP_SUMMARY;
+          echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+        }
+
+        for i in "${APKS[@]}"; do
+                echo "Signing '${i}'..."
+                SIGNED_NAME="$(echo $i | sed 's/.apk$/-signed.apk/g')"
+                $BUILD_TOOLS/zipalign -p -f -v 4 $i "${i}.aligned" >/dev/null
+                $BUILD_TOOLS/apksigner sign \
+                  --ks /tmp/signingkey.jks \
+                  --out $SIGNED_NAME \
+                  --ks-key-alias '${{ inputs.keyAlias }}' \
+                  --ks-pass pass:'${{ inputs.keyStorePassword }}' \
+                  --key-pass pass:'${{ inputs.keyPassword }}' \
+                  "${i}.aligned" && { [ '${{ inputs.summarise }}' = '' ] || {
+                    SIGNED="y";
+                    BASENAME_I=$(basename -- "${i}");
+                    BASENAME=$(basename -- "$SIGNED_NAME");
+                    echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+                    echo "<td>$BASENAME_I</td><td>$BASENAME</td>" >> $GITHUB_STEP_SUMMARY;
+                    echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+                  };}
+        done
+
+        [ $SIGNED = "" ] && { [ '${{ inputs.summarise }}' = '' ] || {
+          echo "<tr>" >> $GITHUB_STEP_SUMMARY;
+          echo "<td>No successful signing</td><td>-</td>" >> $GITHUB_STEP_SUMMARY;
+          echo "</tr>" >> $GITHUB_STEP_SUMMARY;
+        };}
+
+        [ '${{ inputs.summarise }}' = '' ] || {
+          echo "</table>" >> $GITHUB_STEP_SUMMARY;
+        }
+
