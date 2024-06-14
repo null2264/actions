@@ -1,0 +1,30 @@
+name: Build LineageOS for Waydroid
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build app
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'YogSottot/waydroid_stuff'
+
+      - name: Build
+        run: |
+          git lfs install
+          git config --global trailer.changeid.key "Change-Id"
+          mkdir lineage-18.1
+          cd lineage-18.1
+          curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.local/bin/repo
+          chmod a+x ~/.local/bin/repo
+
+          repo init -u https://github.com/LineageOS/android.git -b lineage-18.1 --git-lfs
+          repo sync build/make
+
+          wget -O - https://raw.githubusercontent.com/waydroid/android_vendor_waydroid/lineage-18.1/manifest_scripts/generate-manifest.sh | bash
+
+          cat .repo/manifests/default.xml
