@@ -30,17 +30,20 @@ jobs:
 
           sed -i -e 's/<!-- AOSP Projects -->/<remote name="opengapps" fetch="https:\/\/github.com\/opengapps\/" \/>\n  <remote name="opengapps-gitlab" fetch="https:\/\/gitlab.opengapps.org\/opengapps\/" \/>\n  <project path="vendor\/opengapps\/build" name="aosp_build" revision="master" remote="opengapps" \/>\n  <project path="vendor\/opengapps\/sources\/all" name="all" clone-depth="1" revision="master" remote="opengapps-gitlab" \/>\n  <project path="vendor\/opengapps\/sources\/x86_64" name="x86_64" clone-depth="1" revision="master" remote="opengapps-gitlab" \/>\n  <!-- AOSP Projects -->/g' .repo/manifests/default.xml
 
+          echo "Syncing..."
           repo sync -j$(nproc --all)
 
+          # patches
+          echo "Applying GAPPS patches..."
           curl https://raw.githubusercontent.com/YogSottot/waydroid_stuff/master/kernel_build/lineage-18.1/0001-Add-opengapps-in-device.mk.patch | git -C device/waydroid/waydroid/ apply -v --index
-
           curl https://github.com/cwhuang/aosp_build/commit/384cdac7930e7a2b67fd287cfae943fdaf7e5ca3.patch | git -C vendor/opengapps/build apply -v --index
           curl https://github.com/cwhuang/aosp_build/commit/3bb6f0804fe5d516b6b0bc68d8a45a2e57f147d5.patch | git -C vendor/opengapps/build apply -v --index
 
+          echo "Applying Waydroid patches..."
           . build/envsetup.sh
           apply-waydroid-patches
 
-          # patches
+          echo "Applying custom patches..."
           curl https://patch-diff.githubusercontent.com/raw/waydroid/android_device_waydroid_waydroid/pull/2.patch | git -C device/waydroid/waydroid/ apply -v --index
           sed -i 's/MALLOC_SVELTE\ \:\=\ true//g' device/waydroid/waydroid/BoardConfig.mk
           curl https://raw.githubusercontent.com/waydroid/android_vendor_waydroid/828afefb59ccce46e089756e95e15e6191e272f1/waydroid-patches/base-patches-30/frameworks/base/0051-Force-mouse-event-as-touch-1-2.patch | git -C frameworks/base/ apply -v --index
@@ -49,11 +52,11 @@ jobs:
           curl https://raw.githubusercontent.com/YogSottot/waydroid_stuff/master/kernel_build/lineage-18.1/0001-patch-30-Enable-xmlconfig-on-Android-02.patch | git -C device/waydroid/waydroid/ apply -v
 
           # build
+          echo "Starting build..."
           cp ./kernel_build/Dockerfile ./Dockerfile
           docker build -t waydroid-build-24.04 .
-          mkdir -p /mnt/ccache/lineage-18.1
-          docker create -v /mnt/ccache/lineage-18.1:/ccache --name ccache-18.1 waydroid-build-24.04
-          docker run -e CCACHE_DIR=/ccache --volumes-from ccache-18.1 -v $(pwd):/mnt/lineage -it waydroid-build-24.04 bash -c 'cd /mnt/lineage && ccache -M 50G && . build/envsetup.sh && lunch lineage_waydroid_x86_64-userdebug && make vendorimage -j$(nproc --all)'
+          docker run -v $(pwd):/mnt/lineage -it waydroid-build-24.04 bash -c 'cd /mnt/lineage && . build/envsetup.sh && lunch lineage_waydroid_x86_64-userdebug && make systemimage -j$(nproc --all)'
+          docker run -v $(pwd):/mnt/lineage -it waydroid-build-24.04 bash -c 'cd /mnt/lineage && . build/envsetup.sh && lunch lineage_waydroid_x86_64-userdebug && make vendorimage -j$(nproc --all)'
           docker run -v $(pwd):/mnt/lineage -it waydroid-build-24.04 bash -c 'cd /mnt/lineage && simg2img  out/target/product/waydroid_x86_64/system.img ./system.img && simg2img  out/target/product/waydroid_x86_64/vendor.img ./vendor.img'
 
       - name: Upload APK to artifact
