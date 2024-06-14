@@ -19,7 +19,6 @@ jobs:
           git config --global trailer.changeid.key "Change-Id"
           mkdir lineage-18.1
           cd lineage-18.1
-          echo $PATH
           mkdir -p ~/.local/bin
           curl https://storage.googleapis.com/git-repo-downloads/repo > ~/.local/bin/repo
           chmod a+x ~/.local/bin/repo
@@ -29,6 +28,6 @@ jobs:
 
           wget -O - https://raw.githubusercontent.com/waydroid/android_vendor_waydroid/lineage-18.1/manifest_scripts/generate-manifest.sh | bash
 
-          sed -i -e 's/<!-- AOSP Projects -->/<remote name="opengapps" fetch="https://github.com/opengapps/"  /><remote name="opengapps-gitlab" fetch="https://gitlab.opengapps.org/opengapps/"  /><project path="vendor/opengapps/build" name="aosp_build" revision="master" remote="opengapps" /><project path="vendor/opengapps/sources/all" name="all" clone-depth="1" revision="master" remote="opengapps-gitlab" /><project path="vendor/opengapps/sources/x86_64" name="x86_64" clone-depth="1" revision="master" remote="opengapps-gitlab" /><!-- AOSP Projects -->/g' .repo/manifests/default.xml
+          sed -i -e 's/<!-- AOSP Projects -->/<remote name="opengapps" fetch="https:\/\/github.com\/opengapps\/"  \/><remote name="opengapps-gitlab" fetch="https:\/\/gitlab.opengapps.org\/opengapps\/"  \/><project path="vendor\/opengapps\/build" name="aosp_build" revision="master" remote="opengapps" \/><project path="vendor\/opengapps\/sources\/all" name="all" clone-depth="1" revision="master" remote="opengapps-gitlab" \/><project path="vendor\/opengapps\/sources\/x86_64" name="x86_64" clone-depth="1" revision="master" remote="opengapps-gitlab" \/><!-- AOSP Projects -->/g' .repo/manifests/default.xml
 
           cat .repo/manifests/default.xml
