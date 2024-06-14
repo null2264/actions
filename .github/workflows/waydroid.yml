@@ -61,4 +61,4 @@ jobs:
       - name: Upload APK to artifact
         uses: actions/upload-artifact@v4
         with:
-          path: *.img
+          path: ./*.img
