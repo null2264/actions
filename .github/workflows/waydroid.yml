@@ -30,7 +30,7 @@ jobs:
 
           sed -i -e 's/<!-- AOSP Projects -->/<remote name="opengapps" fetch="https:\/\/github.com\/opengapps\/" \/>\n  <remote name="opengapps-gitlab" fetch="https:\/\/gitlab.opengapps.org\/opengapps\/" \/>\n  <project path="vendor\/opengapps\/build" name="aosp_build" revision="master" remote="opengapps" \/>\n  <project path="vendor\/opengapps\/sources\/all" name="all" clone-depth="1" revision="master" remote="opengapps-gitlab" \/>\n  <project path="vendor\/opengapps\/sources\/x86_64" name="x86_64" clone-depth="1" revision="master" remote="opengapps-gitlab" \/>\n  <!-- AOSP Projects -->/g' .repo/manifests/default.xml
 
-          repo sync
+          repo sync -j$(nproc --all)
 
           curl https://raw.githubusercontent.com/YogSottot/waydroid_stuff/master/kernel_build/lineage-18.1/0001-Add-opengapps-in-device.mk.patch | git -C device/waydroid/waydroid/ apply -v --index
 
