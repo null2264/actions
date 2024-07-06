@@ -17,17 +17,31 @@ inputs:
     description: 'Key password'
     required: true
   buildToolsVersion:
-    description: 'The version Android SDK build tools'
+    description: 'The version Android SDK build-tools'
     default: '34.0.0'
     required: false
   summarise:
     description: 'Summarise the result on GitHub Summary, leave empty to disable'
     default: ''
     required: false
+  installBuildTools:
+    description: 'Whether or not to install build-tools'
+    default: ''
+    required: false
 
 runs:
   using: composite
   steps:
+    - name: Install build-tools
+      shell: bash
+      run: |
+        [ "${{ inputs.installBuildTools }}" = "" ] && {
+          echo "installBuildTools is disabled, skipping..."
+          exit 0
+        }
+        echo "Installing build-tools ${{ inputs.buildToolsVersion }}..."
+        ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager "build-tools;${{ inputs.buildToolsVersion }}"
+
     - name: Build with Gradle
       shell: bash
       run: |
