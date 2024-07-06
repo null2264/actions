@@ -18,7 +18,7 @@ inputs:
     required: true
   buildToolsVersion:
     description: 'The version Android SDK build tools'
-    default: '29.0.3'
+    default: '34.0.0'
     required: false
   summarise:
     description: 'Summarise the result on GitHub Summary, leave empty to disable'
