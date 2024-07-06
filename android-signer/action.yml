@@ -25,7 +25,7 @@ inputs:
     default: ''
     required: false
   installBuildTools:
-    description: 'Whether or not to install build-tools'
+    description: 'Install build-tools before signing, leave empty to disable'
     default: ''
     required: false
 
