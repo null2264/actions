@@ -34,6 +34,11 @@ runs:
         BUILD_TOOLS=${ANDROID_SDK_ROOT}'/build-tools/${{ inputs.buildToolsVersion }}'
         APK_DIR='${{ inputs.releaseDir }}'
 
+        [ "${{ inputs.signingKeyBase64 }}" = "" ] && {
+          echo "# Base64 encoded signing key not found! Run \`openssl base64 -A < someSigningKey.jks | tee someSigningKeyInBase64.txt\` to get base64 encoded signing key." >> $GITHUB_STEP_SUMMARY
+          exit 1
+        }
+
         echo "${{ inputs.signingKeyBase64 }}" | base64 -d > /tmp/signingkey.jks
 
         APKS=($(ls -1 $APK_DIR/app-standard-*.apk))
