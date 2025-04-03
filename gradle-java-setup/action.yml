@@ -1,4 +1,4 @@
-name: Gradle Setup
+name: Gradle and Java Setup
 description: Set up the basics to run gradle
 inputs:
   java:
@@ -9,9 +9,17 @@ inputs:
     description: 'Which JDK distribution to use (default: github)'
     default: 'github'
     required: false
+  jdkPath:
+    description: 'The path to JDK files (used when distro is set to "file")'
+    default: ''
+    required: false
   working-directory:
     description: 'Set working directory to use (default: .)'
     default: '.'
+    required: false
+  gradle-enable:
+    description: 'Whether or not to run setup-gradle'
+    default: true
     required: false
   gradle-home-cache-includes:
     description: 'List of folder/file that should be cached'
@@ -33,7 +41,7 @@ runs:
   steps:
     - name: Setup JDK ${{ inputs.java }} (Custom Distro)
       uses: actions/setup-java@v4
-      if: ${{ inputs.distro != 'github' }}
+      if: ${{ inputs.distro != 'github' || inputs.distro != 'file' }}
       with:
         distribution: ${{ inputs.distro }}
         java-version: ${{ inputs.java }}
@@ -45,6 +53,12 @@ runs:
       run: |
         echo "JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)" >> "$GITHUB_ENV"
 
+    - name: Setup JDK ${{ inputs.java }} (File)
+      if: ${{ inputs.distro == 'file' }}
+      shell: bash
+      run: |
+        echo "JAVA_HOME=${{ inputs.jdkPath }}" >> "$GITHUB_ENV"
+
     - name: Set GRADLE_USER_HOME
       shell: bash
       if: ${{ inputs.working-directory != '.' }}
@@ -54,6 +68,7 @@ runs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
+      if: ${{ inputs.gradle-enable == true }}
       with:
         validate-wrappers: true
         gradle-home-cache-includes: ${{ inputs.gradle-home-cache-includes }}
