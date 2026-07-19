@@ -40,7 +40,7 @@ runs:
   using: composite
   steps:
     - name: Setup JDK ${{ inputs.java }} (Custom Distro)
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       if: ${{ inputs.distro != 'github' || inputs.distro != 'file' }}
       with:
         distribution: ${{ inputs.distro }}
@@ -67,7 +67,7 @@ runs:
         echo "GRADLE_BUILD_ACTION_CACHE_KEY_PREFIX=gradle-${{ inputs.working-directory }}-" >> "$GITHUB_ENV"
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@v6
       if: ${{ inputs.gradle-enable == true }}
       with:
         validate-wrappers: true
